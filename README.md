@@ -40,6 +40,9 @@ gradlew assembleEmbedNoRecord
 
 The first build may take upwards of 20 minutes, on consecutive builds, compiled libraries will have been cached for reuse.
 
+This should give you an .apk file in the `app/build/outputs/apk/embedNoRecord`
+subdirectory that you can then sign and install on your phone.
+
 Without Android Studio
 ----------------------
 
@@ -51,7 +54,7 @@ Without Android Studio
 
 Then run
 ```
-$ ./gradlew assembleEmbedNoRecord
+./gradlew assembleEmbedNoRecord
 ```
 
 The first build may take upwards of 20 minutes, on consecutive builds, compiled libraries will have been cached for reuse.
@@ -62,4 +65,57 @@ subdirectory that you can then sign and install on your phone.
 Signing
 =======
 
-TBD
+Take all the info below with a grain of salt, it reflects the understanding of an individual that does not have a lot of cont
+
+Why do we have to sign?
+-----------------------
+
+Android with its strict security requires all apps to be signed, otherwise they cannot be installed.
+
+With either of the above methods to compile apks you will get a debug and release output.
+
+The debug apk will be signed with a random(?) key and you can thus install and test it.
+
+The release apk will be unsigned and you can therefore not install it, Android won't let you.
+
+What does it do for us?
+-----------------------
+
+Signing serves the purpose of verifying the authenticity of authorship for delivering updates.
+
+An app that was signed with a certain key can only be updated by an apk with the same application id and an equal/higher `version_code` (configured in gradle.properties) that was signed with the same key as the installed app.
+
+Therefore, by signing with a secret key, none can maliciously try and publish an update looking like PA that installs over PA.
+
+Why do we really want to sign instead of releasing debug-key signed versions?
+-----------------------------------------------------------------------------
+
+If we don't sign, it means that consecutively generated debug builds will have different signatures.
+
+This means we cannot use them to update existing installations.
+
+Presumably users would have to uninstall the previous version to install the new one and as far as I understand, that also wipes application data.  
+
+Okay then, how do I sign?
+-------------------------
+
+### Using Android Studio
+
+In Android Studio you may select the burger menu and choose `Build` -> `Generate Signed Bundle / APK`.
+
+Pick `APK`, load in the java keystore file (jks), enter the password to access the key selection, pick the only available key, enter the password for the key and confirm.
+
+Verify the path you want to export the apk too - I recommend creating a new directory at `app/build/outputs/apk/signed` to keep them easy to find.
+Pick `embedNoRecordRelease` from the selection and click `Create` to finish.  
+This should write the signed apk to `app/build/outputs/apk/signed/embedNoRecord/release/app-embed-noRecord-release.apk`
+
+
+### Using uber-apk-signer
+
+I haven't tried this myself so refer to the documentation when in doubt:  
+https://github.com/patrickfav/uber-apk-signer
+
+According to the demo you may supply a java keystore file (jks), its password, keyname and key password as commandline arguments to the tool to sign an apk using that specific key.
+
+Use the apk from the `release` folder of the output of the earlier step.
+Supposedly it won't work with the `debug` one because that one is already signed.
