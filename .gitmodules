@@ -9,3 +9,4 @@
 [submodule "app/src/embed/assets"]
 	path = app/src/embed/assets
 	url = https://github.com/Endaris/panel-attack-updater.git
+	branch = main
