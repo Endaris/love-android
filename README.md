@@ -29,9 +29,11 @@ Compilation adventure
 With Android Studio
 -------------------
 
-Install Android Studio **2022.3.1** or later. After opening it for the first time, open its SDK Manager
+Install Android Studio **2025.1.3** or later. After opening it for the first time, open its SDK Manager
 and on the tab "SDK Tools", tick "Show Package Details" then select NDK (Side By Side) version 26.1.10909125. After that, open
 the repository root.
+
+(According to documentation Android Studio 2022.3.1 is sufficient but I got some errors regarding the Android-Gradle-Plug-in when trying to build so I downloaded a newer version)
 
 Select the gradle dialog from the side panel on the right, pick "Execute Gradle Task" and paste
 ```
